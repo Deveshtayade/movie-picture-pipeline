@@ -64,6 +64,8 @@ jobs:
 
       - name: Run tests
         run: CI=true npm test
+  
+  
 
   build:
     needs: [lint, test]
@@ -71,6 +73,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Debug - list files
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 3 -type d
 
       - name: Build Docker image
         env:
