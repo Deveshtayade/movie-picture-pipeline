@@ -64,6 +64,8 @@ jobs:
 
       - name: Run tests
         run: CI=true npm test
+  
+  
 
   build:
     needs: [lint, test]
@@ -72,6 +74,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug - list files
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 3 -type d
+
       - name: Build Docker image
         env:
           REACT_APP_MOVIE_API_URL: http://localhost:5000
@@ -79,4 +87,4 @@ jobs:
           docker build \
             --build-arg REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} \
             --tag=mp-frontend:${{ github.sha }} \
-            starter/frontend
+            .
