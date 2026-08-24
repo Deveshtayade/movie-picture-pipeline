@@ -127,7 +127,7 @@ resource "aws_ecr_repository" "frontend" {
 }
 
 resource "aws_ecr_repository" "backend" {
-  name                 = "backend"
+  name                 = "mp-backend"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
 
