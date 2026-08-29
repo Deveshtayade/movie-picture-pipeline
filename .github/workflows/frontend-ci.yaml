@@ -67,24 +67,39 @@ jobs:
   
   
 
-  build:
-    needs: [lint, test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+ build:
+  needs: [lint, test]
+  runs-on: ubuntu-latest
 
-      - name: Debug - list files
-        run: |
-          pwd
-          ls -la
-          find . -maxdepth 3 -type d
+  defaults:
+    run:
+      working-directory: starter/frontend
+
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup NodeJS
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Cache npm dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('starter/frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-
+
+    - name: Install dependencies
+      run: npm ci
 
       - name: Build Docker image
-        env:
-          REACT_APP_MOVIE_API_URL: http://localhost:5000
-        run: |
-          docker build \
-            --build-arg REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} \
-            --tag=mp-frontend:${{ github.sha }} \
-            .
+  env:
+    REACT_APP_MOVIE_API_URL: http://localhost:5000
+  run: |
+    docker build \
+      --build-arg REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} \
+      --tag mp-frontend:${{ github.sha }} \
+      .
